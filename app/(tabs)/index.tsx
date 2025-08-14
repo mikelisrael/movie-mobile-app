@@ -42,7 +42,6 @@ export default function Index() {
     refreshMovies
   } = useInfiniteMovies();
 
-  // Memoize movie chunks to prevent recalculation on every render
   const movieChunks = useMemo(() => {
     const chunks = [];
     for (let i = 0; i < movies.length; i += 3) {
@@ -75,7 +74,6 @@ export default function Index() {
     [handleMoviePress]
   );
 
-  // Memoized key extractor
   const keyExtractor = useCallback((item: Movie[], index: number) => {
     return `row-${index}-${item[0]?.id || "empty"}`;
   }, []);
