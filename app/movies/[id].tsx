@@ -56,19 +56,38 @@ const MovieDetails = () => {
     );
   }
 
+  // Safe extraction of movie data with proper null checks
+  const releaseYear = movie?.release_date
+    ? movie.release_date.split("-")[0]
+    : "";
+  const runtime = movie?.runtime ? `${movie.runtime}m` : "";
+  const voteAverage = movie?.vote_average ? Math.round(movie.vote_average) : 0;
+  const voteCount = movie?.vote_count || 0;
+  const genres = movie?.genres?.map((g: any) => g.name).join(" • ") || "N/A";
+  const budget = movie?.budget
+    ? `$${Math.round(movie.budget / 1_000_000)} million`
+    : null;
+  const revenue = movie?.revenue
+    ? `$${Math.round(movie.revenue / 1_000_000)} million`
+    : null;
+  const productionCompanies =
+    movie?.production_companies?.map((c: any) => c.name).join(" • ") || "N/A";
+
   return (
     <SafeAreaView className="flex-1 bg-primary">
       <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
         <View className="relative">
           <Image
             source={{
-              uri: "https://image.tmdb.org/t/p/w500" + movie?.poster_path || ""
+              uri: movie?.poster_path
+                ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                : "https://via.placeholder.com/500x750?text=No+Image"
             }}
             className="h-[550px] w-full"
           />
 
           <LinearGradient
-            colors={["rgba(0,0,0,0.8)", "rgba(0,0,0,0.4)", "transparent"]}
+            colors={["rgba(0,0,0,1.0)", "rgba(0,0,0,0.4)", "transparent"]}
             locations={[0, 0.3, 0.7]}
             className="absolute left-0 right-0 top-0 h-32"
           />
@@ -79,55 +98,43 @@ const MovieDetails = () => {
             {movie?.title || "Movie Title"}
           </Text>
 
-          <View className="mt-2 flex-row items-center gap-x-1">
-            <Text className="mt-2 text-sm text-light-200">
-              {movie?.release_date?.split("-")[0]}
-            </Text>
+          <View className="mt-2 flex-row items-center gap-x-3">
+            {releaseYear ? (
+              <Text className="text-sm text-light-200">{releaseYear}</Text>
+            ) : null}
 
-            <Text className="mt-2 text-sm text-light-200">
-              {movie?.runtime}m
-            </Text>
+            {runtime ? (
+              <Text className="text-sm text-light-200">{runtime}</Text>
+            ) : null}
           </View>
 
           <View className="mt-2 flex-row items-center gap-x-1 rounded-md bg-dark-100 px-2 py-1">
             <Image source={icons.star} className="size-4" />
             <Text className="text-sm font-bold text-white">
-              {Math.round(movie?.vote_average ?? 0)}/10
+              {voteAverage}/10
             </Text>
-            <Text className="text-sm text-light-200">
-              ({movie?.vote_count} votes)
-            </Text>
+            <Text className="text-sm text-light-200">({voteCount} votes)</Text>
           </View>
 
           <MovieInfo label="Overview" value={movie?.overview} />
-          <MovieInfo
-            label="Genres"
-            value={movie?.genres?.map((g: any) => g.name).join(" • ") || "N/A"}
-          />
+          <MovieInfo label="Genres" value={genres} />
 
-          {(movie?.budget || movie?.revenue) && (
-            <View className="flex w-1/2 flex-row justify-between">
-              <MovieInfo
-                label="Budget"
-                value={`$${(movie?.budget ?? 0) / 1_000_000} million`}
-              />
-              <MovieInfo
-                label="Revenue"
-                value={`$${Math.round(
-                  (movie?.revenue ?? 0) / 1_000_000
-                )} million`}
-              />
+          {(budget || revenue) && (
+            <View className="flex w-full flex-row justify-between">
+              {budget && (
+                <View className="flex-1">
+                  <MovieInfo label="Budget" value={budget} />
+                </View>
+              )}
+              {revenue && (
+                <View className="flex-1">
+                  <MovieInfo label="Revenue" value={revenue} />
+                </View>
+              )}
             </View>
           )}
 
-          <MovieInfo
-            label="Production Companies"
-            value={
-              movie?.production_companies
-                ?.map((c: any) => c.name)
-                .join(" • ") || "N/A"
-            }
-          />
+          <MovieInfo label="Production Companies" value={productionCompanies} />
         </View>
       </ScrollView>
 
