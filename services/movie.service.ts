@@ -28,3 +28,8 @@ export const fetchMovies = async ({
 
   return await apiGet(discoverPath);
 };
+
+export const getSIngleMovie = async (id: string) => {
+  const moviePath = `/movie/${id}`;
+  return await apiGet(moviePath);
+};
